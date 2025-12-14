@@ -1,4 +1,4 @@
-# Grep CLI
+# minigrep CLI program
 
 1. To test run `cargo test`
 2. To run the program 
