@@ -7,20 +7,24 @@ mod config;
 use crate::config::Config;
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    if let Err(e) = run(&args) {
+    if let Err(e) = run() {
         eprintln!("Application error: {}", e);
         process::exit(1);
     }
 }
 
-fn run(args: &[String]) -> Result<(), Box<dyn Error>> {
-    let config = Config::build(args)?;
-    let contents = config.file_contents()?;
+fn run() -> Result<(), Box<dyn Error>> {
+    let args: Vec<String> = env::args().collect();
 
-    let result = match config.get_case_insensitive() {
-        true => search_case_insensitive(config.get_query(), &contents),
-        false => search_case_sensitive(config.get_query(), &contents),
+    let config = Config::build(&args)?;
+
+    let query = config.get_query();
+    let contents = config.file_contents()?;
+    let case_insensitive = config.get_case_insensitive();
+
+    let result = match case_insensitive {
+        true => search_case_insensitive(query, &contents),
+        false => search_case_sensitive(query, &contents),
     };
 
     result.iter().for_each(|line| println!("{}", line));
